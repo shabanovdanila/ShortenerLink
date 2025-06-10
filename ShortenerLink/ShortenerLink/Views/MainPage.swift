@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct MainPage: View {
-    @State var url1: String = ""
-    @State var url2: String = ""
-    @State var url3: String = ""
+    
+    @Environment(\.dependencies) private var dependencies
+    
+    @State var urlInput: String = ""
+
     var body: some View {
-        ShortenerView(viewModel: ShortenerLinkViewModel(linkClient: CleanUriClient()), url: $url1, nameOfShortener: "CleanUri")
+        ShortenerView(viewModel: ShortenerLinkViewModel(linkClient: dependencies.cleanUriClient), url: $urlInput, nameOfShortener: "CleanUri")
     }
     
     private struct ShortenerView: View {

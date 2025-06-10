@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct ShortenerLinkApp: App {
+    
+    private let dependencies: AppDependencies = AppDependencies.defaultValue
+    
     var body: some Scene {
         WindowGroup {
             MainPage()
+                .environment(\.dependencies, dependencies)
         }
     }
 }
