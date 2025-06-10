@@ -14,7 +14,7 @@ struct MainPage: View {
     @State var urlInput: String = ""
 
     var body: some View {
-        ShortenerView(viewModel: ShortenerLinkViewModel(linkClient: dependencies.cleanUriClient), url: $urlInput, nameOfShortener: "CleanUri")
+        ShortenerView(viewModel: ShortenerLinkViewModel(linkClient: dependencies.goTinyClient), url: $urlInput, nameOfShortener: "GoTiny")
     }
     
     private struct ShortenerView: View {

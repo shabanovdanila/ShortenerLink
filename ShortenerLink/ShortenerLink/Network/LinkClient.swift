@@ -9,5 +9,5 @@ import Foundation
 import Combine
 
 protocol LinkClient {
-    func getShortLink(for url: UrlLink) -> AnyPublisher<String, Error>
+    func getShortLink(for url: String) -> AnyPublisher<String, Error>
 }

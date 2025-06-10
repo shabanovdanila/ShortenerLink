@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct UrlLink: Codable {
+struct CleanUriLink: Codable {
     var url: String
 }
 
-struct ServerResponseUrlLink: Codable {
+struct CleanUriResponseLink: Codable {
     var result_url: String
 }

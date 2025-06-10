@@ -22,9 +22,8 @@ final class ShortenerLinkViewModel: ObservableObject {
     
     func shortenLink(longUrl: String) {
         loading = true
-        let urlLink = UrlLink(url: longUrl)
         
-        linkClient.getShortLink(for: urlLink)
+        linkClient.getShortLink(for: longUrl)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {

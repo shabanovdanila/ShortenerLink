@@ -10,14 +10,14 @@ import SwiftUICore
 
 struct AppDependencies {
     let cleanUriClient: LinkClient
-    //let second: LinkClientProtocol
+    let goTinyClient: LinkClient
 }
 
 extension AppDependencies: EnvironmentKey {
     static var defaultValue: AppDependencies {
         AppDependencies(
-            cleanUriClient: CleanUriClient()
-            //second: BitlyClient()
+            cleanUriClient: CleanUriClient(),
+            goTinyClient: GoTinyClient()
         )
     }
 }
