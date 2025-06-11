@@ -12,13 +12,39 @@ final class ShortenerLinkViewModel: ObservableObject {
     @Published var loadedShortLink: String = ""
     @Published var loading: Bool = false
     @Published var error: Error? = nil
+    @Published var isConnected = true
     
     private let linkClient: LinkClient
     private var cancellables = Set<AnyCancellable>()
+    private var connectionManager: ConnectionManager
     
-    
-    init(linkClient: LinkClient) {
+    init(linkClient: LinkClient, connectionManager: ConnectionManager) {
         self.linkClient = linkClient
+        self.connectionManager = connectionManager
+        
+        self.connectionManager.callback = onPathUpdate
+        self.connectionManager.startMonitoring()
+    }
+    
+    private func onPathUpdate(status: Bool) {
+        isConnected = status
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            
+            if self.isConnected {
+                if !self.loadedShortLink.isEmpty {
+                    return
+                }
+            } else {
+                self.loadedShortLink = ""
+                self.cancellables.removeAll()
+                
+                self.error = URLError(.notConnectedToInternet)
+                self.loadedShortLink = "No internet connection"
+                self.loading = false
+            }
+        }
     }
     
     func shortenLink(longUrl: String) {

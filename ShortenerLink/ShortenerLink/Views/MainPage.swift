@@ -16,14 +16,14 @@ struct MainPage: View {
         ScrollView {
             VStack(spacing: 24) {
                 ShortenerView(
-                    viewModel: ShortenerLinkViewModel(linkClient: dependencies.goTinyClient),
+                    viewModel: ShortenerLinkViewModel(linkClient: dependencies.goTinyClient, connectionManager: NetworkMonitor()),
                     url: $urlInput1,
                     nameOfShortener: "GoTiny",
                     accentColor: .purple
                 )
                 
                 ShortenerView(
-                    viewModel: ShortenerLinkViewModel(linkClient: dependencies.cleanUriClient),
+                    viewModel: ShortenerLinkViewModel(linkClient: dependencies.cleanUriClient, connectionManager: NetworkMonitor()),
                     url: $urlInput2,
                     nameOfShortener: "CleanUri",
                     accentColor: .blue
