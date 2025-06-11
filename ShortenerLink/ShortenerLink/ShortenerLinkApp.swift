@@ -16,7 +16,7 @@ struct ShortenerLinkApp: App {
         WindowGroup {
             MainPage()
                 .environment(\.dependencies, dependencies)
-                .environmentObject(ConnectionManagerWrapper(NetworkMonitor.shared))
+                .environmentObject(ConnectionManagerWrapper(BadConnection()))
         }
     }
 }
