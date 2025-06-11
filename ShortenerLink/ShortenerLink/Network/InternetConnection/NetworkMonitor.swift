@@ -8,21 +8,22 @@
 import Foundation
 import Network
 
-class NetworkMonitor: ConnectionManager {
-    var callback: ((Bool) -> Void)?
+class NetworkMonitor: ObservableObject {
+
+    static let shared = NetworkMonitor()
+    @Published var isConnected: Bool = true
     
-    private let pathMonitor = NWPathMonitor()
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: "NetworkMonitor")
     
-    init() {
-        self.pathMonitor.pathUpdateHandler = onUpdate
+    private init() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            DispatchQueue.main.async {
+                self?.isConnected = path.status == .satisfied
+            }
+        }
+        monitor.start(queue: queue)
     }
-    
-    func startMonitoring() {
-        pathMonitor.start(queue: DispatchQueue.main)
-    }
-    
-    private func onUpdate(path: NWPath) {
-        callback?(path.status == .satisfied)
-    }
-    
 }
+
+extension NetworkMonitor: ConnectionManager {}

@@ -9,24 +9,33 @@ import SwiftUI
 
 struct MainPage: View {
     @Environment(\.dependencies) private var dependencies
+    @EnvironmentObject var connection: ConnectionManagerWrapper
+    
     @State var urlInput1: String = ""
     @State var urlInput2: String = ""
     
+    
     var body: some View {
+        
         ScrollView {
             VStack(spacing: 24) {
+                NetworkStatusView(isConnected: connection.isConnected)
+                    .padding(.horizontal)
+            
                 ShortenerView(
-                    viewModel: ShortenerLinkViewModel(linkClient: dependencies.goTinyClient, connectionManager: NetworkMonitor()),
+                    viewModel: ShortenerLinkViewModel(linkClient: dependencies.goTinyClient),
                     url: $urlInput1,
                     nameOfShortener: "GoTiny",
-                    accentColor: .purple
+                    accentColor: .purple,
+                    isConnected: connection.isConnected
                 )
                 
                 ShortenerView(
-                    viewModel: ShortenerLinkViewModel(linkClient: dependencies.cleanUriClient, connectionManager: NetworkMonitor()),
+                    viewModel: ShortenerLinkViewModel(linkClient: dependencies.cleanUriClient),
                     url: $urlInput2,
                     nameOfShortener: "CleanUri",
-                    accentColor: .blue
+                    accentColor: .blue,
+                    isConnected: connection.isConnected
                 )
             }
             .padding()
@@ -34,17 +43,32 @@ struct MainPage: View {
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
     }
     
+    private struct NetworkStatusView: View {
+        let isConnected: Bool
+        
+        var body: some View {
+            HStack {
+                Image(systemName: isConnected ? "wifi" : "wifi.slash")
+                Text(isConnected ? "Online" : "Offline")
+            }
+            .foregroundColor(isConnected ? .green : .red)
+            .padding(8)
+            .background(isConnected ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
+            .cornerRadius(8)
+        }
+    }
+    
     private struct ShortenerView: View {
         @ObservedObject var viewModel: ShortenerLinkViewModel
         @Binding var url: String
         let nameOfShortener: String
         let accentColor: Color
+        let isConnected: Bool
         
         @State private var showingError = false
         
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
-                // Header
                 HStack {
                     Text(nameOfShortener)
                         .font(.title2.bold())
@@ -57,19 +81,16 @@ struct MainPage: View {
                     }
                 }
                 
-                // Input field
                 TextField("Paste URL here", text: $url)
-                    .textFieldStyle(RoundedTextFieldStyle(accentColor: accentColor))
+                    .textFieldStyle(RoundedTextFieldStyle(accentColor: accentColor, isEnabled: isConnected))
                 
-                // Convert button
                 Button(action: convertAction) {
                     Text("Convert to Short URL")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(PrimaryButtonStyle(accentColor: accentColor))
-                .disabled(viewModel.loading)
-                
-                // Result or error
+                .disabled(viewModel.loading || !isConnected)
+
                 if !viewModel.loadedShortLink.isEmpty {
                     ResultView(
                         text: viewModel.loadedShortLink,
@@ -100,6 +121,7 @@ struct MainPage: View {
     
     private struct RoundedTextFieldStyle: TextFieldStyle {
         var accentColor: Color
+        var isEnabled: Bool = true
         
         func _body(configuration: TextField<Self._Label>) -> some View {
             configuration
@@ -108,10 +130,13 @@ struct MainPage: View {
                 .cornerRadius(10)
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(accentColor.opacity(0.3), lineWidth: 1)
+                        .stroke(isEnabled ? accentColor.opacity(0.3) : Color.red.opacity(0.4), lineWidth: 1)
                 )
+                .foregroundColor(isEnabled ? .primary : .gray)
+                .disabled(!isEnabled)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
+                .opacity(isEnabled ? 1.0 : 0.5)
         }
     }
     

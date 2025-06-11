@@ -8,17 +8,9 @@
 import Foundation
 
 struct GoodConnection: ConnectionManager {
-    var callback: ((Bool) -> Void)?
-    
-    func startMonitoring() {
-        callback?(true)
-    }
+    var isConnected: Bool = true
 }
 
 struct BadConnection: ConnectionManager {
-    var callback: ((Bool) -> Void)?
-    
-    func startMonitoring() {
-        callback?(false)
-    }
+    var isConnected: Bool = false
 }
